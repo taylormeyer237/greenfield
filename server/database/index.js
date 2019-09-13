@@ -20,9 +20,8 @@ const findUser = (user) => new Promise((resolve, reject) => {
     if (err) {
       console.log(err);
       return resolve(user);
-    } else {
-      return reject(err);
     }
+    return reject(err);
   });
 });
 
@@ -30,7 +29,7 @@ const saveUser = (user) =>
   // connection.connect();I don't think we need this, but leaving it here for now??
   new Promise((resolve, reject) => {
     // attempt to avoid sql injection. Not sure if this is completely correct though
-    const userInsert = 'INSERT INTO users(userId, username, password, email, business) VALUES (DEFAULT, ?)';
+    const userInsert = 'INSERT INTO users(userId, username, salt ,password, email, business) VALUES (DEFAULT, ?)';
     // assuming <user> parameter is an object
     const insertValues = [user.username, user.salt, user.password, user.email, user.business];
 
@@ -60,9 +59,9 @@ const savePost = (post) =>
   // connection.connect();I don't think we need this, but leaving it here for now??
   new Promise((resolve, reject) => {
     // attempt to avoid sql injection. Not sure if this is completely correct though
-    const postInsert = 'INSERT INTO posts(postId, postText, img1, img2, img3, userId) VALUES (DEFAULT, ?)';
+    const postInsert = 'INSERT INTO posts(postId, text, img1, title, location, tags) VALUES (DEFAULT, ?)';
     // assuming <post> parameter is an object
-    const insertValues = [post.text, post.img1, post.img2, post.img3, post.userId];
+    const insertValues = [post.text, post.img1, post.title, post.location, post.tags];
 
     databaseConnection.query(postInsert, [insertValues], (err, results, fields) => {
       if (err) {
@@ -86,6 +85,18 @@ const increasePostCount = (userId) => new Promise((resolve, reject) => {
   });
 });
 
+const displayPosts = () => new Promise((resolve, reject) => {
+// const fetchedPosts = 'select posts.*, users.* from posts inner join users order by posts.postId desc';
+  const fetchedPosts = 'select * from posts';
+  databaseConnection.query(fetchedPosts, (err, results) => {
+    if (err) {
+      return reject(err);
+    }
+    return resolve(results);
+  });
+});
+
+
 cloudinary.config(config);// config object for connecting to cloudinary
 
 const saveImage = (image) => cloudinary.uploader.upload(image.tempFilePath);
@@ -99,6 +110,7 @@ module.exports = {
   increasePostCount,
   saveImage,
   saveUsersPostCount,
+  displayPosts,
 };
 
 

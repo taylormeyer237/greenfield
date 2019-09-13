@@ -16,10 +16,11 @@ CREATE TABLE users (
 
 CREATE TABLE posts (
   postId INT NOT NULL AUTO_INCREMENT,
-  postText varchar (255), 
+  text varchar (255), 
   img1 varchar (255) NOT NULL,
-  img2 varchar(255),
-  img3 varchar(255),
+  title varchar (50),
+  location varchar (255),
+  tags varchar (300),
   postNum INT DEFAULT 0,
   userId INT,
   PRIMARY KEY (postId),

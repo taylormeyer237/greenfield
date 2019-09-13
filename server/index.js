@@ -3,25 +3,22 @@ const express = require('express');
 const app = express();
 const path = require('path');
 const bcrypt = require('bcrypt');
+// const users = require('../server/database');
 
 const PORT = process.env.PORT || 8080;
 const bodyParser = require('body-parser');
 
-const passport = require('passport'); // for User authentication
-// const flash = require('connect-flash'); // for User authentication pop up notifications
-
-
 const fileUpload = require('express-fileupload');// middleware that creates req.files object that contains files uploaded through frontend input
-const cloudinary = require('cloudinary').v2;
-// api for dealing with image DB, cloudinary
-const config = require('./config.js');
-
-cloudinary.config(config);// config object for connecting to cloudinary
+const cloudinary = require('cloudinary').v2;// api for dealing with image DB, cloudinary
+const cloudinaryConfig = require('./config.js');
+const { convertToCoordinates } = require('../client/src/helpers/geoLocation');
 
 const {
-  findUser, saveUser, savePost, increasePostCount, saveUsersPostCount,
+  findUser, saveUser, savePost, increasePostCount, saveUsersPostCount, displayPosts,
 } = require('./database/index.js');
-const users = require('../server/database');
+
+cloudinary.config(cloudinaryConfig);// config object for connecting to cloudinary
+
 
 app.use(bodyParser.json());
 // app.use(express.static(path.join(__dirname, '../client/images')));
@@ -29,6 +26,17 @@ app.use(express.static(path.join(__dirname, '../client/dist')));
 app.use(fileUpload({
   useTempFiles: true,
 }));
+
+app.get('/posts', (req, res) => {
+  displayPosts()
+    .then((posts) => {
+      res.status(201).send(posts);
+    })
+    .catch((error) => {
+      console.log(error);
+      res.status(500).send('something went wrong and we cannot show you the posts right now');
+    });
+});
 
 
 app.post('/signIn', (req, res) => {
@@ -42,6 +50,7 @@ app.post('/signIn', (req, res) => {
 });
 
 app.post('/signUp', (req, res) => {
+  debugger;
   // need to verify that password matches, required fields submitted, etc
   // if user already exists, redirect back to sign-in
   // if username already taken, redirect back to sign-up
@@ -87,17 +96,33 @@ app.post('/submitPost', (req, res) => {
 
   // TEMPORARY standin for userId. replace with actual data when it exists
   // const { userId } = verifySession;
-  const { userId } = req.body;
-
+  const image = req.files.photo;
+  const userId = 1;
   const post = {
     text: req.body.text,
-    img1: req.body.img1,
-    img2: req.body.img2 || null,
-    img3: req.body.img3 || null,
-    userId: req.body.userId,
+    img1: null,
+    title: req.body.title,
+    location: null,
+    tags: req.body.tags,
   };
 
-  savePost(post)
+  cloudinary.uploader.upload(image.tempFilePath)
+    .then((result) => {
+      post.img1 = result.secure_url;
+      const {
+        address, city, state, zip,
+      } = req.body;
+      const fullAddress = {
+        address, city, state, zip,
+      };
+
+      return convertToCoordinates(fullAddress);
+    })
+    .then((geoLocation) => {
+      const { location } = geoLocation.data.results[0].geometry;
+      post.location = `${location.lat}, ${location.lng}`;
+      savePost(post);
+    })
     .then(() => {
       increasePostCount(userId)
         .then(() => {

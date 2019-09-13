@@ -20,7 +20,7 @@ class SignUpView extends React.Component {
 
     onSignUpSubmit() {
         const user = this.state;
-        axios.post('/signUp', { username: `${user.username}` })
+        // axios.post('/signUp', { username: `${user.username}` })
 
         if (user.password === user.varifyPass) {
             return axios.post('/signUp', user)
