@@ -14,8 +14,9 @@ const passport = require('passport'); // for User authentication
 const fileUpload = require('express-fileupload');// middleware that creates req.files object that contains files uploaded through frontend input
 const cloudinary = require('cloudinary').v2;
 // api for dealing with image DB, cloudinary
-cloudinary.config(config);// config object for connecting to cloudinary
 const config = require('./config.js');
+
+cloudinary.config(config);// config object for connecting to cloudinary
 
 const {
   findUser, saveUser, savePost, increasePostCount, saveUsersPostCount,
@@ -30,14 +31,14 @@ app.use(fileUpload({
 }));
 
 
-app.post('/signIn', (req, res) =>{
+app.post('/signIn', (req, res) => {
   // will have to use passport for auth
   const givenUser = req.body.username;
   const givenPassword = req.body.password;
   return findUser(givenUser)
     .then((foundUser) => {
       bcrypt.compareSync(givenPassword, foundUser.password);
-    })
+    });
 });
 
 app.post('/signUp', (req, res) => {
