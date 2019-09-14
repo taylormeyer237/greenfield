@@ -17,55 +17,56 @@ class App extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            view: 'home',
+            view: 'default',
             selectedPost: {},
             user: {
-                username: "Wes",
-                email: "wtschmidt94@gmail.com",
-                loggedIn: false,
-                geolocation: {
-                    lat: 'here',
-                    lng: 'now'
-                },
+                userId: '',
+                username: "",
+                email: "",
+                business: '',
+                // geolocation: {
+                //     lat: 'here',
+                //     lng: 'now'
+                // },
             },
             posts: [
                 // example data:
-            {
-                img: require("./../images/Drawing1.png"),
-                title: "Card Title",
-                subtitle: "Card Subtitle",
-                description: "Some quick example text to build on the card title and make up the bulk of the card's content.",
-            },
-            {
-                img: require('./../images/Space Hand Painting.jpg'),
-                title: "Space hand",
-                subtitle: "Simply a hand in space",
-                description: "Created using acrylics on canvas.",
-            },
-            {
-                img: require('./../images/Space Forrest Painting.jpg'),
-                title: "Interstellar Forest",
-                subtitle: "It's fall somewhere at least",
-                description: "Created using acrylics on canvas.",
-            },
-            {
-                img: require("./../images/Drawing1.png"),
-                title: "Card Title",
-                subtitle: "Card Subtitle",
-                description: "Some quick example text to build on the card title and make up the bulk of the card's content.",
-            },
-            {
-                img: require('./../images/Space Hand Painting.jpg'),
-                title: "Space hand",
-                subtitle: "Simply a hand in space",
-                description: "Created using acrylics on canvas.",
-            },
-            {
-                img: require('./../images/Space Forrest Painting.jpg'),
-                title: "Interstellar Forest",
-                subtitle: "It's fall somewhere at least",
-                description: "Created using acrylics on canvas.",
-            },
+            // {
+            //     img: require("./../images/Drawing1.png"),
+            //     title: "Card Title",
+            //     subtitle: "Card Subtitle",
+            //     description: "Some quick example text to build on the card title and make up the bulk of the card's content.",
+            // },
+            // {
+            //     img: require('./../images/Space Hand Painting.jpg'),
+            //     title: "Space hand",
+            //     subtitle: "Simply a hand in space",
+            //     description: "Created using acrylics on canvas.",
+            // },
+            // {
+            //     img: require('./../images/Space Forrest Painting.jpg'),
+            //     title: "Interstellar Forest",
+            //     subtitle: "It's fall somewhere at least",
+            //     description: "Created using acrylics on canvas.",
+            // },
+            // {
+            //     img: require("./../images/Drawing1.png"),
+            //     title: "Card Title",
+            //     subtitle: "Card Subtitle",
+            //     description: "Some quick example text to build on the card title and make up the bulk of the card's content.",
+            // },
+            // {
+            //     img: require('./../images/Space Hand Painting.jpg'),
+            //     title: "Space hand",
+            //     subtitle: "Simply a hand in space",
+            //     description: "Created using acrylics on canvas.",
+            // },
+            // {
+            //     img: require('./../images/Space Forrest Painting.jpg'),
+            //     title: "Interstellar Forest",
+            //     subtitle: "It's fall somewhere at least",
+            //     description: "Created using acrylics on canvas.",
+            // },
             ]
         }
         this.changePostView = this.changePostView.bind(this);
@@ -78,18 +79,25 @@ class App extends React.Component {
     componentDidMount() {
         this.getNearbyPosts()
         .then(nearPosts => {
+            if (nearPosts.length < 1) {
+                // return;
+            } else {
             this.setState({
                 posts: nearPosts
             })
+            event.preventDefault();
+        }
         })
     }
     // grabs all posts close to geolocation and puts them in the posts array inside this.state
     // need some instruction on how to actually sort by geolocation though....
+    // used for changeing the view of the page
+
     getNearbyPosts() {
         return axios.get('/posts')
         .then(response => response.data);
     }
-    // used for changeing the view of the page
+
     changeView(newView) {
         this.setState({
             view: newView
@@ -108,6 +116,7 @@ class App extends React.Component {
         this.setState({
             user: newUser
         })
+        event.preventDefault();
     }
 
     currentPage(page) {
@@ -117,7 +126,7 @@ class App extends React.Component {
         switch(page) {
             case 'sign-up':
                 return(
-                    <SignUpView />
+                    <SignUpView changeView={this.changeView} />
                 )
             case 'login':
                 return(

@@ -17,11 +17,11 @@ const findUser = (user) => new Promise((resolve, reject) => {
   const foundUser = `SELECT * FROM users where username= "${user}"`;
 
   databaseConnection.query(foundUser, [user], (err, results, fields) => {
-    if (err) {
-      console.log(err);
-      return resolve(user);
+    if (results.length === 0) {
+      // console.log(err);
+      return reject(user);
     }
-    return reject(err);
+    return resolve(results);
   });
 });
 
@@ -31,7 +31,7 @@ const saveUser = (user) =>
     // attempt to avoid sql injection. Not sure if this is completely correct though
     const userInsert = 'INSERT INTO users(userId, username, password, email, business) VALUES (DEFAULT, ?)';
     // assuming <user> parameter is an object
-    const insertValues = [user.username, user.salt, user.password, user.email, user.business];
+    const insertValues = [user.username, user.password, user.email, user.business];
 
     databaseConnection.query(userInsert, [insertValues], (err, results, fields) => {
       if (err) {

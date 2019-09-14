@@ -1,6 +1,6 @@
 import React, {Component} from 'react';
 import { Map, GoogleApiWrapper, Marker } from 'google-maps-react';
-import { convertToCoordinates } from '../helpers/geoLocation.js'
+import { convertToCoordinates } from './../helpers/geoLocation.js'
 import { API_KEY } from '../helpers/config.js'
 
 const mapStyles = {//sets map size
@@ -11,7 +11,6 @@ const mapStyles = {//sets map size
 class MapContainer extends Component {
     constructor(props) {
       super(props);
-  
       this.state = {
         latLng: {//coordinates for map center and marker placement
           lat: 30,

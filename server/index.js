@@ -1,10 +1,7 @@
 const express = require('express');
 const path = require('path');
-<<<<<<< HEAD
 const bcrypt = require('bcrypt');
-=======
 // const users = require('../server/database');
->>>>>>> fdefca1dc8edd4bdcee40bdba2c380526dbb2aa2
 
 const PORT = process.env.PORT || 8080;
 const bodyParser = require('body-parser');
@@ -14,17 +11,6 @@ const bodyParser = require('body-parser');
 const app = express();
 
 const fileUpload = require('express-fileupload');// middleware that creates req.files object that contains files uploaded through frontend input
-<<<<<<< HEAD
-const cloudinary = require('cloudinary').v2;
-// api for dealing with image DB, cloudinary
-cloudinary.config(config);// config object for connecting to cloudinary
-const config = require('./config.js');
-
-const {
-  findUser, saveUser, savePost, increasePostCount, saveUsersPostCount,
-} = require('./database/index.js');
-const users = require('../server/database');
-=======
 const cloudinary = require('cloudinary').v2;// api for dealing with image DB, cloudinary
 const cloudinaryConfig = require('./config.js');
 const { convertToCoordinates } = require('../client/src/helpers/geoLocation');
@@ -34,7 +20,6 @@ const {
 } = require('./database/index.js');
 
 cloudinary.config(cloudinaryConfig);// config object for connecting to cloudinary
->>>>>>> fdefca1dc8edd4bdcee40bdba2c380526dbb2aa2
 
 app.use(bodyParser.json());
 // app.use(express.static(path.join(__dirname, '../client/images')));
